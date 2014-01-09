@@ -51,6 +51,11 @@ getCounts = H.fromListWith (+) . map (,1)
 topCounts :: H.HashMap k Int -> [(Int, k)]
 topCounts = sortBy (comparing (Down . fst)) . map swap . H.toList
 
--- h> fromList . map H.toList <$> getRecords
--- h> col "tz" . fromList . map H.toList <$> getRecords
--- h> sliceTo 10 . col "tz" . fromList . map H.toList <$> getRecords
+getRecordsFrame :: IO (DataFrame Int T.Text A.Value)
+getRecordsFrame = fromList . map H.toList <$> getRecords
+
+-- h> getRecordsFrame
+-- h> col "tz" <$> getRecordsFrame
+-- h> sliceTo 10 . col "tz" <$> getRecordsFrame
+-- h> valMap asText . col "tz" <$> getRecordsFrame
+-- h> valueCounts . valMap asText . col "tz" <$> getRecordsFrame

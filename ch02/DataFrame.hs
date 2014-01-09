@@ -10,6 +10,7 @@ module DataFrame
   , col
   , valueCounts
   , colMap
+  , valMap
   ) where
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
@@ -63,11 +64,15 @@ instance (Show i, Show k, Show v) => Show (DataColumn i k v) where
                                map showRow (map indexPair [n-15..n-1]))
 
 showColumn :: Show k => DataColumn i k v -> String
-showColumn DataColumn { cKey = k, cColumn = c } =
-  intercalate "\t" [ colShow k, show (M.size c), "non-null values" ]
+showColumn DataColumn { cKey = ck, cColumn = c } =
+  intercalate "\t" $ maybe id ((:) . colShow) ck tl
+  where tl = [ show (M.size c), "non-null values" ]
 
 colMap :: (M.Map i a -> M.Map i b) -> DataColumn i k a -> DataColumn i k b
 colMap f c = c { cColumn = f (cColumn c) }
+
+valMap :: (a -> b) -> DataColumn i k a -> DataColumn i k b
+valMap = colMap . M.map
 
 colShow :: Show a => a -> String
 colShow k = case s of
